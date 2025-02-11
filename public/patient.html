@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Prescription System - Patient Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        .sidebar {
+            min-height: calc(100vh - 64px);
+            background: linear-gradient(180deg, #1a365d 0%, #2d3748 100%);
+        }
+        .active {
+            background: rgba(66, 153, 225, 0.2);
+            border-left: 4px solid #4299e1;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-stats {
+            background: white;
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+        }
+        .card-stats:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .icon-circle {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .appointments-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        .appointments-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .appointments-list::-webkit-scrollbar-thumb {
+            background: #cbd5e0;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <i class="fas fa-hospital text-indigo-600 text-2xl"></i>
+                <span class="ml-2 text-xl font-semibold text-gray-900">AI Prescription System</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <button class="p-2 text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-bell text-xl"></i>
+                        <span class="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
+                    </button>
+                </div>
+                <span id="patientName" class="text-gray-700 font-medium"></span>
+                <button onclick="logout()" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">
+                    Logout
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside class="w-64 sidebar">
+            <nav class="mt-8">
+                <a href="#" class="flex items-center px-6 py-3 text-gray-300 hover:text-white hover:bg-blue-600/20 transition-colors active">
+                    <i class="fas fa-home w-6"></i>
+                    <span class="ml-2">Dashboard</span>
+                </a>
+                <a href="./patient/pbookap.html" class="flex items-center px-6 py-3 text-gray-300 hover:text-white hover:bg-blue-600/20 transition-colors">
+                    <i class="fas fa-calendar-alt w-6"></i>
+                    <span class="ml-2">Book Appointment</span>
+                </a>
+                <a href="./patient/ai.html" class="flex items-center px-6 py-3 text-gray-300 hover:text-white hover:bg-blue-600/20 transition-colors">
+                    <i class="fas fa-robot w-6"></i>
+                    <span class="ml-2">AI Prescription</span>
+                </a>
+                <a href="#prescriptions" class="flex items-center px-6 py-3 text-gray-300 hover:text-white hover:bg-blue-600/20 transition-colors">
+                    <i class="fas fa-file-medical w-6"></i>
+                    <span class="ml-2">Prescriptions</span>
+                </a>
+                <a href="#appointments" class="flex items-center px-6 py-3 text-gray-300 hover:text-white hover:bg-blue-600/20 transition-colors">
+                    <i class="fas fa-clock w-6"></i>
+                    <span class="ml-2">Appointments</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 p-8">
+            <div class="max-w-7xl mx-auto">
+                <!-- Welcome Section -->
+                <div class="gradient-bg rounded-lg p-8 text-white mb-8">
+                    <h1 class="text-3xl font-bold">Welcome Back, <span id="welcomeName"></span></h1>
+                    <p class="mt-2 opacity-90">Manage your health journey with our AI-powered system</p>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    <div class="card-stats rounded-lg p-6">
+                        <div class="flex items-center">
+                            <div class="icon-circle bg-blue-100 text-blue-600">
+                                <i class="fas fa-calendar-check text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-gray-500 text-sm">Upcoming Appointments</h3>
+                                <p class="text-2xl font-semibold text-gray-800" id="appointmentCount">-</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-stats rounded-lg p-6">
+                        <div class="flex items-center">
+                            <div class="icon-circle bg-purple-100 text-purple-600">
+                                <i class="fas fa-file-prescription text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-gray-500 text-sm">Active Prescriptions</h3>
+                                <p class="text-2xl font-semibold text-gray-800" id="prescriptionCount">-</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-stats rounded-lg p-6">
+                        <div class="flex items-center">
+                            <div class="icon-circle bg-green-100 text-green-600">
+                                <i class="fas fa-user-md text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-gray-500 text-sm">Available Doctors</h3>
+                                <p class="text-2xl font-semibold text-gray-800" id="doctorCount">-</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Recent Appointments -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-semibold text-gray-800">Recent Appointments</h2>
+                            <a href="#" class="text-blue-600 hover:text-blue-700 text-sm">View All</a>
+                        </div>
+                        <div class="appointments-list overflow-y-auto max-h-64" id="recentAppointments">
+                            <!-- Appointments will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Recent Prescriptions -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-semibold text-gray-800">Recent Prescriptions</h2>
+                            <a href="#" class="text-blue-600 hover:text-blue-700 text-sm">View All</a>
+                        </div>
+                        <div class="prescriptions-list overflow-y-auto max-h-64" id="recentPrescriptions">
+                            <!-- Prescriptions will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Patient name fetching logic from the provided script
+        document.addEventListener("DOMContentLoaded", () => {
+            if (!sessionStorage.getItem("token")) {
+                window.location.href = "/index.html";
+                return;
+            }
+            loadPatientInfo();
+            loadDashboardData();
+        });
+
+        async function loadPatientInfo() {
+            try {
+                const response = await fetch("/api/patient/info", {
+                    headers: {
+                        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+                    },
+                });
+
+                if (!response.ok) throw new Error("Failed to fetch patient info");
+
+                const data = await response.json();
+
+                if (data && data.name) {
+                    document.getElementById("patientName").textContent = data.name;
+                    document.getElementById("welcomeName").textContent = data.name;
+                }
+            } catch (error) {
+                console.error("Error loading patient info:", error);
+                window.location.href = "/index.html";
+            }
+        }
+
+        async function loadDashboardData() {
+            try {
+                // Load appointments
+                const appointmentsResponse = await fetch("/api/patient/appointments", {
+                    headers: {
+                        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+                    },
+                });
+                const appointments = await appointmentsResponse.json();
+                updateAppointmentsDisplay(appointments);
+
+                // Load prescriptions
+                const prescriptionsResponse = await fetch("/api/prescriptions", {
+                    headers: {
+                        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+                    },
+                });
+                const prescriptions = await prescriptionsResponse.json();
+                updatePrescriptionsDisplay(prescriptions);
+
+                // Load doctors
+                const doctorsResponse = await fetch("/api/doctors", {
+                    headers: {
+                        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+                    },
+                });
+                const doctors = await doctorsResponse.json();
+                document.getElementById("doctorCount").textContent = doctors.length;
+
+            } catch (error) {
+                console.error("Error loading dashboard data:", error);
+            }
+        }
+
+        function updateAppointmentsDisplay(appointments) {
+            const container = document.getElementById("recentAppointments");
+            document.getElementById("appointmentCount").textContent = appointments.length;
+            
+            if (appointments.length === 0) {
+                container.innerHTML = '<p class="text-gray-500">No appointments scheduled</p>';
+                return;
+            }
+
+            container.innerHTML = appointments.slice(0, 5).map(apt => `
+                <div class="border-b border-gray-200 py-3">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="font-medium text-gray-800">Dr. ${apt.doctor.name}</p>
+                            <p class="text-sm text-gray-500">${new Date(apt.date).toLocaleDateString()} - ${apt.time}</p>
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-sm ${
+                            apt.status === 'scheduled' ? 'bg-green-100 text-green-800' :
+                            apt.status === 'completed' ? 'bg-blue-100 text-blue-800' :
+                            'bg-red-100 text-red-800'
+                        }">${apt.status}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updatePrescriptionsDisplay(prescriptions) {
+            const container = document.getElementById("recentPrescriptions");
+            document.getElementById("prescriptionCount").textContent = prescriptions.length;
+            
+            if (prescriptions.length === 0) {
+                container.innerHTML = '<p class="text-gray-500">No prescriptions found</p>';
+                return;
+            }
+
+            container.innerHTML = prescriptions.slice(0, 5).map(presc => `
+                <div class="border-b border-gray-200 py-3">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="font-medium text-gray-800">Dr. ${presc.doctorId.name}</p>
+                            <p class="text-sm text-gray-500">${new Date(presc.createdAt).toLocaleDateString()}</p>
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-sm ${
+                            presc.status === 'approved' ? 'bg-green-100 text-green-800' :
+                            presc.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-red-100 text-red-800'
+                        }">${presc.status}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function logout() {
+            sessionStorage.removeItem("token");
+            window.location.href = "/index.html";
+        }
+    </script>
+</body>
+</html>
