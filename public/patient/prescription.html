@@ -1,0 +1,184 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    /> 
+    <link rel="stylesheet" href="patient.css" />
+  </head>
+  <body>
+    <script src="patientscript.js"></script>
+    <header class="header">
+      <div class="header-container">
+        <div class="header-logo">
+          <i class="fas fa-hospital"></i>
+          <span>MedConnect</span>
+        </div>
+        <div class="header-actions">
+          <button
+            onclick="logout()"
+            class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="page-container">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <nav class="sidebar-nav">
+          <a href="/patient.html" class="nav-link" id="dashboard-link">
+            <i class="fas fa-home"></i>
+            <span>Dashboard</span>
+          </a>
+          <a
+            href="/patient/pbookap.html"
+            class="nav-link"
+            id="appointments-link"
+          >
+            <i class="fas fa-calendar-alt"></i>
+            <span>Book Appointment</span>
+          </a>
+          <a href="/patient/ai.html" class="nav-link" id="ai-link">
+            <i class="fas fa-robot"></i>
+            <span>AI Prescription</span>
+          </a>
+          <a href="prescription.html" class="nav-link" id="prescriptions-link"> 
+            <i class="fas fa-file-medical"></i>
+            <span>Prescriptions</span>
+          </a>
+          <a href="./appointment.html" class="nav-link" id="view-appointments-link">
+            <i class="fas fa-clock"></i>
+            <span>Appointments</span>
+          </a>
+        </nav>
+      </aside>
+      <div class="main-content" style="background: linear-gradient(to right, #b0c4ff, #a3caff, #79a7d3);">
+        <div class="prescriptions-section">
+            
+                <div style="
+                    background: linear-gradient(135deg, #4A90E2 0%, #9013FE 100%);
+                    border-radius: 0.5rem;
+                    padding: 30px;
+                    color: white;
+                    margin-bottom: 2rem;
+                    text-align: center;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-direction: column;
+                  "
+                >
+                  <h1 style="font-size: 1.875rem; font-weight: bold;">
+                    <span style="color: #eee7bc;">Your Prescriptions</span> 
+                    <span id="welcomeName" style="color: #00E676;"></span>
+                  </h1></div>
+                
+              
+
+          <div id="prescriptionsList" class="prescriptions-container">
+            <!-- Prescriptions will be populated here -->
+          </div>
+        </div>
+      </div>
+    </div>
+       
+  <div  id="prescriptionModal" class="  fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50">
+    <div   class=" bg-white rounded-lg shadow-xl  overflow-y-auto p-6 relative">
+        <button id="closeModalBtn" class=" absolute top-4 right-4 text-gray-600 hover:text-gray-900">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linestyle="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+        <div id="modalContent" class="mt-4"></div>
+    </div>
+</div>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // Get current page path
+        const currentPath = window.location.pathname;
+
+        // Remove 'active' class from all links
+        document.querySelectorAll(".nav-link").forEach((link) => {
+          link.classList.remove("active");
+        });
+
+        // Add 'active' class based on current page
+        if (currentPath.includes("patient.html")) {
+          document.getElementById("dashboard-link").classList.add("active");
+        } else if (currentPath.includes("pbookap.html")) {
+          document.getElementById("appointments-link").classList.add("active");
+        } else if (currentPath.includes("ai.html")) {
+          document.getElementById("ai-link").classList.add("active");
+        } else if (currentPath.includes("prescription.html")) {
+          document.getElementById("prescriptions-link").classList.add("active");
+        }else if (currentPath.includes("appointment.html")) {
+          document.getElementById("view-appointments-link").classList.add("active");
+        }
+      });
+      
+function openModal(content) {
+  const modal = document.getElementById("prescriptionModal");
+  const modalContent = document.getElementById("modalContent");
+
+  // Set content
+  modalContent.innerHTML = content;
+
+  // Show modal
+  modal.classList.remove("hidden");
+  modal.classList.add("flex");
+}
+
+function closeModal() {
+  const modal = document.getElementById("prescriptionModal");
+
+  // Hide modal
+  modal.classList.remove("flex");
+  modal.classList.add("hidden");
+}
+
+// Event Listeners for Modal
+document.addEventListener("DOMContentLoaded", () => {
+  const closeModalBtn = document.getElementById("closeModalBtn");
+  const modal = document.getElementById("prescriptionModal");
+
+  // Close modal when close button clicked
+  closeModalBtn.addEventListener("click", closeModal);
+
+  // Close modal when clicking outside the modal content
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      closeModal();
+    }
+  });
+
+  // Close modal with Escape key
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !modal.classList.contains("hidden")) {
+      closeModal();
+    }
+  });
+});
+
+    </script>
+    <script src="patientscript.js"></script>
+    <script src="patientscript.js"></script>
+    <script src="https://js.puter.com/v2/"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  </body>
+</html>
+
