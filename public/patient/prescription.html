@@ -95,18 +95,52 @@
         </div>
       </div>
     </div>
-       
-  <div  id="prescriptionModal" class="  fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50">
-    <div   class=" bg-white rounded-lg shadow-xl  overflow-y-auto p-6 relative">
-        <button id="closeModalBtn" class=" absolute top-4 right-4 text-gray-600 hover:text-gray-900">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linestyle="round">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-        </button>
-        <div id="modalContent" class="mt-4"></div>
+
+    <!-- Modal with fixed positioning and improved styling -->
+    <div id="prescriptionModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50">
+        <div class="bg-white rounded-lg shadow-xl w-11/12 max-w-lg mx-auto my-6 relative flex flex-col" style="max-height: 80vh;">
+            <div class="flex justify-between items-center border-b p-4">
+                <h3 class="text-lg font-semibold">Prescription Details</h3>
+                <button id="closeModalBtn" class="text-gray-600 hover:text-gray-900 focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div id="modalContent" class="p-4 overflow-y-auto" style="scrollbar-width: thin;">
+                <!-- Content will be inserted here -->
+            </div>
+        </div>
     </div>
-</div>
+
+    <style>
+    /* Add these styles to make the scrollbar visible and styled */
+    #modalContent::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    #modalContent::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+    }
+
+    #modalContent::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 3px;
+    }
+
+    #modalContent::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+
+    /* For Firefox */
+    #modalContent {
+        scrollbar-width: thin;
+        scrollbar-color: #888 #f1f1f1;
+    }
+    </style>
+
     <script>
       document.addEventListener("DOMContentLoaded", () => {
         // Get current page path
@@ -131,49 +165,114 @@
         }
       });
       
-function openModal(content) {
-  const modal = document.getElementById("prescriptionModal");
-  const modalContent = document.getElementById("modalContent");
+      function openModal(content) {
+        const modal = document.getElementById("prescriptionModal");
+        const modalContent = document.getElementById("modalContent");
+        
+        // Set content
+        modalContent.innerHTML = content;
+        
+        // Disable body scroll
+        document.body.style.overflow = 'hidden';
+        
+        // Show modal
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+      }
 
-  // Set content
-  modalContent.innerHTML = content;
+      function closeModal() {
+        const modal = document.getElementById("prescriptionModal");
+        
+        // Enable body scroll
+        document.body.style.overflow = 'auto';
+        
+        // Hide modal
+        modal.classList.remove("flex");
+        modal.classList.add("hidden");
+      }
 
-  // Show modal
-  modal.classList.remove("hidden");
-  modal.classList.add("flex");
-}
+      // Event Listeners for Modal
+      document.addEventListener("DOMContentLoaded", () => {
+        const closeModalBtn = document.getElementById("closeModalBtn");
+        const modal = document.getElementById("prescriptionModal");
+        
+        // Close modal when close button clicked
+        closeModalBtn.addEventListener("click", closeModal);
+        
+        // Close modal when clicking outside the modal content
+        modal.addEventListener("click", (event) => {
+          if (event.target === modal) {
+            closeModal();
+          }
+        });
+        
+        // Close modal with Escape key
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape" && !modal.classList.contains("hidden")) {
+            closeModal();
+          }
+        });
+      });
 
-function closeModal() {
-  const modal = document.getElementById("prescriptionModal");
+      // Update the showPrescriptionDetails function in patientscript.js to format content better
+      async function showPrescriptionDetails(prescriptionId) {
+        try {
+            const response = await fetch(`/api/prescriptions/${prescriptionId}`, {
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+                },
+            });
 
-  // Hide modal
-  modal.classList.remove("flex");
-  modal.classList.add("hidden");
-}
+            if (!response.ok) throw new Error("Failed to fetch prescription details");
 
-// Event Listeners for Modal
-document.addEventListener("DOMContentLoaded", () => {
-  const closeModalBtn = document.getElementById("closeModalBtn");
-  const modal = document.getElementById("prescriptionModal");
+            const prescription = await response.json();
 
-  // Close modal when close button clicked
-  closeModalBtn.addEventListener("click", closeModal);
+            const detailsHTML = `
+                <div class="space-y-4">
+                    <div class="bg-blue-50 p-3 rounded-lg">
+                        <p class="font-semibold">Patient: ${prescription.patientId?.name || "Unassigned"}</p>
+                        <p class="text-sm text-gray-600">Doctor: ${prescription.doctorId?.name || "Unassigned"}</p>
+                        <p class="text-sm text-gray-600">Created: ${new Date(prescription.createdAt).toLocaleString()}</p>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h4 class="font-semibold mb-2">AI Diagnosis:</h4>
+                        <div class="bg-gray-50 p-3 rounded-lg text-gray-700">
+                            ${prescription.aiDiagnosis || "No AI Analysis Available"}
+                        </div>
+                    </div>
+                    
+                    ${prescription.medications && prescription.medications.length > 0 ? `
+                        <div class="mt-4">
+                            <h4 class="font-semibold mb-2">Medications:</h4>
+                            <ul class="list-disc pl-5 space-y-2">
+                                ${prescription.medications.map(med => `
+                                    <li class="text-gray-700">
+                                        <span class="font-medium">${med.name}</span> - 
+                                        ${med.dosage} (${med.frequency})
+                                    </li>
+                                `).join("")}
+                            </ul>
+                        </div>
+                    ` : ""}
+                    
+                    ${prescription.doctorNotes ? `
+                        <div class="mt-4">
+                            <h4 class="font-semibold mb-2">Doctor's Notes:</h4>
+                            <div class="bg-gray-50 p-3 rounded-lg text-gray-700">
+                                ${prescription.doctorNotes}
+                            </div>
+                        </div>
+                    ` : ""}
+                </div>
+            `;
 
-  // Close modal when clicking outside the modal content
-  modal.addEventListener("click", (event) => {
-    if (event.target === modal) {
-      closeModal();
-    }
-  });
-
-  // Close modal with Escape key
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && !modal.classList.contains("hidden")) {
-      closeModal();
-    }
-  });
-});
-
+            openModal(detailsHTML);
+        } catch (error) {
+            console.error("Error fetching prescription details:", error);
+            alert("Failed to load prescription details");
+        }
+      }
     </script>
     <script src="patientscript.js"></script>
     <script src="patientscript.js"></script>
