@@ -59,6 +59,10 @@
                     <i class="fas fa-clock"></i>
                     <span>Appointments</span>
                 </a>
+                <a href="scheme.html" id="view-schemes-link" class="nav-link">
+                    <i class="fas fa-hand-holding-medical w-6"></i>
+                    <span class="ml-2">Health Schemes</span>
+                </a>
             </nav>
         </aside>
     <!-- Main Content -->
@@ -196,6 +200,8 @@
     }
     else if (currentPath.includes("appointment.html")) {
           document.getElementById("view-appointments-link").classList.add("active");
+        } else if (currentPath.includes("scheme.html")) {
+            document.getElementById("view-schemes-link").classList.add("active");
         }
 });</script>
   <script src="patientscript.js"></script> 

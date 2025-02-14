@@ -56,13 +56,17 @@
             <i class="fas fa-robot"></i>
             <span>AI Prescription</span>
           </a>
-          <a href="prescription.html" class="nav-link" id="prescriptions-link"> 
+          <a href="./prescription.html" class="nav-link" id="prescriptions-link"> 
             <i class="fas fa-file-medical"></i>
             <span>Prescriptions</span>
           </a>
           <a href="./appointment.html" class="nav-link" id="view-appointments-link">
             <i class="fas fa-clock"></i>
             <span>Appointments</span>
+          </a>
+          <a href="./scheme.html" id="view-schemes-link" class="nav-link">
+            <i class="fas fa-hand-holding-medical w-6"></i>
+            <span class="ml-2">Health Schemes</span>
           </a>
         </nav>
       </aside>
@@ -202,6 +206,8 @@
           document.getElementById("prescriptions-link").classList.add("active");
         }else if (currentPath.includes("appointment.html")) {
           document.getElementById("view-appointments-link").classList.add("active");
+        } else if (currentPath.includes("scheme.html")) {
+          document.getElementById("view-schemes-link").classList.add("active");
         }
       });
       

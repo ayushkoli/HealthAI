@@ -44,7 +44,7 @@
       <div class="header-container">
         <div class="header-logo">
           <i class="fas fa-hospital"></i>
-          <span>MedConnectt</span>
+          <span>MedConnect</span>
         </div>
         <div class="header-actions">
           <span id="patientName" class="text-gray-700 font-medium"></span>
@@ -96,6 +96,10 @@
               <i class="fas fa-clock"></i>
               <span>Appointments</span>
             </a>
+            <a href="./patient/scheme.html" id="view-schemes-link" class="nav-link"class="nav-link">
+              <i class="fas fa-hand-holding-medical w-6"></i>
+              <span class="ml-2">Health Schemes</span>
+          </a>
             
           </nav>
         
@@ -241,6 +245,9 @@
         }
          else if (currentPath.includes("appointment.html")) {
           document.getElementById("view-appointments-link").classList.add("active");
+        }
+        else if (currentPath.includes("scheme.html")) {
+          document.getElementById("view-schemes-link").classList.add("active");
         }
       });
       // Patient name fetching logic from the provided script
